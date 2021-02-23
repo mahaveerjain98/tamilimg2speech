@@ -3,7 +3,7 @@
 Example: python main.py --input tamilimages\OIP2.jpg
 <br>Works better in better internet condition.
 
-<br>
+<br><br>
 Benchmark:<br>
 time taken for pytesseract: 0.17101049423217773<br>
 Time taken for blob translate: 0.23576664924621582<br>
