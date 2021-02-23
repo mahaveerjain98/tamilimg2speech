@@ -17,103 +17,57 @@
 
 import pytesseract
 from PIL import Image
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
+# import matplotlib.pyplot as plt
+# import matplotlib.image as mpimg
 from textblob import TextBlob
 from deep_translator import GoogleTranslator,MyMemoryTranslator
 import gtts
 import os
 from playsound import playsound
 from gtts import gTTS
+import argparse
+import time
 pytesseract.pytesseract.tesseract_cmd = 'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
-
+#Give this path where the tesseract is installed and add the tamil model in the tessdata folder from the tesseract tamilocr website
 
 
 if __name__ =="__main__":
-  
-    image_file = "tamilimages/OIP1.jpg"
 
+    st=time.time()
 
-    # img = mpimg.imread(image_file)
-    # plt.imshow(img)
-    # plt.show()
-
-    text = pytesseract.image_to_string(Image.open(image_file), lang="tam")
-    #  text1 = pytesseract.image_to_string(Image.open(image_file), lang="tam+en")
-    text=text.replace("\n"," ").replace("\u200c","").replace("\x0c","")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--input",help="Enter the Input image where tamil text to be translated ")
+    args= parser.parse_args()
+    if args.input != None :
+        if args.input.endswith("jpg") or args.input.endswith("png"):
+            print(f"File is taken as {args.input}")
+            image_file = args.input
+        else:
+            print("incorrect file, Give jpg or png file")
+    else:
+        print("using Default file tamilimages/OIP1.jpg")
+        image_file = "tamilimages/OIP1.jpg"
     
-
+    tst=time.time()    
+    text = pytesseract.image_to_string(Image.open(image_file), lang="tam")
+    print("time taken for pytesseract:",time.time()-tst)
+    text=text.replace("\n"," ").replace("\u200c","").replace("\x0c","")
+    bts=time.time()
     tb = TextBlob(text)
     textblob_translated = str(tb.translate(to="en"))
-    print(textblob_translated)
-    
+    print("Time taken for blob translate:",time.time()-bts)
+    gts=time.time()  
     google_translated = GoogleTranslator(source='auto', target='en').translate(text)
-    print(google_translated)
+    print("Time taken for google translate:",time.time()-gts)
+    result=textblob_translated
+    print(result)
 
-    
-    try:
-        memory_translated = MyMemoryTranslator(source="tamil", target="en").translate(text=text)
-    except:
-        memory_translated=""
-    print(memory_translated)
-
-    if textblob_translated == google_translated:
-        result=textblob_translated
-    elif google_translated == memory_translated:
-        result=google_translated
-    elif memory_translated == textblob_translated:
-        result=memory_translated
-    else:
-        result=google_translated
-
-
+    sts=time.time()
     obj = gTTS(text=textblob_translated, lang='en', slow=False)
     filename="result.mp3"
     obj.save(filename)
+    print("time to save an sound object:",time.time()-sts)
     playsound(filename)
     os.remove(filename)
-
-
-
-  # # getting similarity metrics of 2 strings
-# def JaccardDistance(str1, str2):
-#     str1 = set(str1.split())
-#     str2 = set(str2.split())
-#     return float(len(str1 & str2)) / len(str1 | str2)
-
-# from collections import Counter
-# from sklearn.feature_extraction.text import TfidfVectorizer
-
-# import math
-# #Function for finding cosin similarity
-# def cosine_similarity(v1,v2):
-#     "compute cosine similarity of v1 to v2: (v1 dot v2)/{||v1||*||v2||)"
-#     sumxx, sumxy, sumyy = 0, 0, 0
-#     for i in range(len(v1)):
-#         x = v1[i]; y = v2[i]
-#         sumxx += x*x
-#         sumyy += y*y
-#         sumxy += x*y
-#     return sumxy/math.sqrt(sumxx*sumyy)
-
-# #document corpus
-# new_docs = ['He watches basketball and baseball', 'Julie likes to play basketball and baseball', 'Jane loves to play baseball']
-# vectorizer = TfidfVectorizer(stop_words='english',
-#                              use_idf=True, lowercase=True)
-
-# first get TFIDF matrix
-# X = vectorizer.fit_transform(new_docs)
-# cosine_similarity(X[0],X[1])
-
-# import gtts  
-# from playsound import playsound  
-# from gtts import gTTS 
-# obj = gTTS(text=result, lang='en', slow=False) 
-# obj.save("example.mp3")   
-# # playsound(obj)  
-
-# import IPython
-# IPython.display.Audio("example.mp3", autoplay=True)
-
-
+    print("Timetaken:",time.time()-st)
 
