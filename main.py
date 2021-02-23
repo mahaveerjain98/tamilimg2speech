@@ -48,21 +48,21 @@ if __name__ =="__main__":
         print("using Default file tamilimages/OIP1.jpg")
         image_file = "tamilimages/OIP1.jpg"
     
-    tst=time.time()    
+    
     text = pytesseract.image_to_string(Image.open(image_file), lang="tam")
-    print("time taken for pytesseract:",time.time()-tst)
+    
     text=text.replace("\n"," ").replace("\u200c","").replace("\x0c","")
-    bts=time.time()
+    
     tb = TextBlob(text)
     textblob_translated = str(tb.translate(to="en"))
-    print("Time taken for blob translate:",time.time()-bts)
-    gts=time.time()  
-    google_translated = GoogleTranslator(source='auto', target='en').translate(text)
-    print("Time taken for google translate:",time.time()-gts)
+    
+    
+    # google_translated = GoogleTranslator(source='auto', target='en').translate(text)
+    
     result=textblob_translated
     print(result)
 
-    sts=time.time()
+    
     obj = gTTS(text=textblob_translated, lang='en', slow=False)
     filename="result.mp3"
     obj.save(filename)
